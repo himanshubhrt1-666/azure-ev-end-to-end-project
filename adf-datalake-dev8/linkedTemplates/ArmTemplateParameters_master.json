@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-datalake-dev8"
+		},
+		"ls_adls_gen2_accountKey": {
+			"value": ""
+		},
+		"ls_adls_gen2_properties_typeProperties_url": {
+			"value": "https://stadlsdev008.dfs.core.windows.net/"
+		},
+		"ls_voltgrid_api_properties_typeProperties_url": {
+			"value": "https://ev-project-navy-mu.vercel.app/"
+		},
+		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_run_date": {
+			"value": "@{formatDateTime(trigger().scheduledTime, 'yyyy-MM-dd')}"
+		},
+		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_username": {
+			"value": "himan_volt"
+		},
+		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_password": {
+			"value": "himan@volt1"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
