@@ -54,7 +54,7 @@
 						"requestMethod": "GET",
 						"additionalHeaders": {
 							"Authorization": {
-								"value": "@{concat('Token ', activity('GetAuthToken').output.token)}",
+								"value": "@{concat('Token ', activity('GetAuthToken_v2').output.token)}",
 								"type": "Expression"
 							}
 						},
@@ -93,7 +93,10 @@
 						"referenceName": "ds_voltgrid_payments",
 						"type": "DatasetReference",
 						"parameters": {
-							"auth_token": "@activity('GetAuthToken').output.token"
+							"auth_token": {
+								"value": "@activity('GetAuthToken_v2').output.token",
+								"type": "Expression"
+							}
 						}
 					}
 				],
