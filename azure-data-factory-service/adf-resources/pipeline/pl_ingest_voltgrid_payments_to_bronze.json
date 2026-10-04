@@ -4,7 +4,7 @@
 		"description": "Fetches VoltGrid payment data from REST API and loads to ADLS Gen2 bronze layer",
 		"activities": [
 			{
-				"name": "GetAuthToken",
+				"name": "GetAuthToken_v2",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -32,7 +32,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "GetAuthToken",
+						"activity": "GetAuthToken_v2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
