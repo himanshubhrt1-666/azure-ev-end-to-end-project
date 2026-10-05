@@ -55,6 +55,30 @@
 						"@activity('act_lookup_tables').output.value"
 					]
 				}
+			},
+			{
+				"name": "var_table_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "act_lookup_tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_all_tables",
+					"value": {
+						"value": "@activity('act_lookup_tables').output.count",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
