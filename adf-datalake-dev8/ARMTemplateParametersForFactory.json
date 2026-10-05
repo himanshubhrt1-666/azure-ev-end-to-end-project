@@ -13,15 +13,6 @@
 		},
 		"ls_voltgrid_api_properties_typeProperties_url": {
 			"value": "https://ev-project-navy-mu.vercel.app/"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_run_date": {
-			"value": "@{formatDateTime(trigger().scheduledTime, 'yyyy-MM-dd')}"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_username": {
-			"value": "himan_volt"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_password": {
-			"value": "himan@volt1"
 		}
 	}
 }

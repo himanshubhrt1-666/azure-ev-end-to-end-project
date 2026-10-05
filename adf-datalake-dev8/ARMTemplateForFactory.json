@@ -18,194 +18,12 @@
 		"ls_voltgrid_api_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ev-project-navy-mu.vercel.app/"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_run_date": {
-			"type": "string",
-			"defaultValue": "@{formatDateTime(trigger().scheduledTime, 'yyyy-MM-dd')}"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_username": {
-			"type": "string",
-			"defaultValue": "himan_volt"
-		},
-		"trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_password": {
-			"type": "string",
-			"defaultValue": "himan@volt1"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_ingest_voltgrid_payments_to_bronze')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Fetches VoltGrid payment data from REST API and loads to ADLS Gen2 bronze layer",
-				"activities": [
-					{
-						"name": "GetAuthToken_v2",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
-							},
-							"url": "https://ev-project-navy-mu.vercel.app/api/auth/login/",
-							"body": {
-								"value": "@{concat('{\"username\":\"', pipeline().parameters.api_username, '\",\"password\":\"', pipeline().parameters.api_password, '\"}')}",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "CopyPaymentsToBronze",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "GetAuthToken_v2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"additionalHeaders": {
-									"Authorization": {
-										"value": "@{concat('Token ', activity('GetAuthToken_v2').output.token)}",
-										"type": "Expression"
-									}
-								},
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "ls_adls_gen2",
-										"type": "LinkedServiceReference"
-									},
-									"path": "logs/copy-errors/"
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_voltgrid_payments",
-								"type": "DatasetReference",
-								"parameters": {
-									"auth_token": {
-										"value": "@activity('GetAuthToken_v2').output.token",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_adls_bronze_json",
-								"type": "DatasetReference",
-								"parameters": {
-									"run_date": "@pipeline().parameters.run_date"
-								}
-							}
-						]
-					},
-					{
-						"name": "AlertOnFailure",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "CopyPaymentsToBronze",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"method": "POST",
-							"headers": {},
-							"url": "https://httpbin.org/post",
-							"body": {
-								"value": "@{concat('{\"text\":\"Pipeline FAILED: ', pipeline().Pipeline, ' at ', utcnow(), '\"}')}",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"run_date": {
-						"type": "string",
-						"defaultValue": "2026-01-15"
-					},
-					"api_username": {
-						"type": "string",
-						"defaultValue": "himan_volt"
-					},
-					"api_password": {
-						"type": "string",
-						"defaultValue": "himan@volt1"
-					}
-				},
-				"annotations": [],
-				"lastPublishTime": "2026-10-03T14:21:24Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_voltgrid_payments')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_bronze_json')]",
-				"[concat(variables('factoryId'), '/linkedServices/ls_adls_gen2')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ds_adls_bronze_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -234,6 +52,41 @@
 					}
 				},
 				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_gen2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_tables_config')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_gen2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "tables.json",
+						"folderPath": "config",
+						"fileSystem": "bronze"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"table": {
+							"type": "string"
+						},
+						"active": {
+							"type": "boolean"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_adls_gen2')]"
@@ -297,40 +150,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trg_daily_payments')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_ingest_voltgrid_payments_to_bronze",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"run_date": "[parameters('trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_run_date')]",
-							"api_username": "[parameters('trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_username')]",
-							"api_password": "[parameters('trg_daily_payments_properties_pl_ingest_voltgrid_payments_to_bronze_parameters_api_password')]"
-						}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2026-10-03T08:34:00",
-						"timeZone": "India Standard Time"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_ingest_voltgrid_payments_to_bronze')]"
-			]
 		}
 	]
 }
