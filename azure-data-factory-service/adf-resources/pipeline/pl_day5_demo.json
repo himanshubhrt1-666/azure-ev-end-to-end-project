@@ -32,8 +32,37 @@
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "act_set_all_tables",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "act_lookup_tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_all_tables",
+					"value": [
+						"@activity('act_lookup_tables').output.value"
+					]
+				}
 			}
 		],
+		"variables": {
+			"var_all_tables": {
+				"type": "Array",
+				"defaultValue": []
+			}
+		},
 		"annotations": []
 	}
 }
