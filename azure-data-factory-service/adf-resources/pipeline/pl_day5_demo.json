@@ -212,6 +212,22 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "act_pause",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "act_track_table",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 3
+							}
 						}
 					]
 				}
