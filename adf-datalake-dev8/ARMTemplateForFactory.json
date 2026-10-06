@@ -205,6 +205,45 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "act_loop_tables",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "act_route_env",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('act_filter_active').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "act_track_table",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "v_last_table",
+										"value": {
+											"value": "@item().table",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -225,6 +264,9 @@
 						"type": "Integer"
 					},
 					"v_schema": {
+						"type": "String"
+					},
+					"v_last_table": {
 						"type": "String"
 					}
 				},
