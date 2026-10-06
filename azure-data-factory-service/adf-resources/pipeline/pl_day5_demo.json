@@ -73,18 +73,53 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "var_all_tables",
+					"variableName": "var_table_count",
 					"value": {
 						"value": "@activity('act_lookup_tables').output.count",
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "act_filter_active",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "act_lookup_tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('act_lookup_tables').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().active,true)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"p_env": {
+				"type": "string",
+				"defaultValue": "dev"
+			}
+		},
 		"variables": {
 			"var_all_tables": {
 				"type": "Array",
 				"defaultValue": []
+			},
+			"var_table_count": {
+				"type": "Integer"
+			},
+			"v_schema": {
+				"type": "String"
 			}
 		},
 		"annotations": []
