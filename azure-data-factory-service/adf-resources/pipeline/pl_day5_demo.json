@@ -231,12 +231,39 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "act_count_to_3",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "act_loop_tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greaterOrEquals(int(variables('v_count')),3)",
+						"type": "Expression"
+					},
+					"timeout": "0.12:00:00"
+				}
 			}
 		],
 		"parameters": {
 			"p_env": {
 				"type": "string",
 				"defaultValue": "dev"
+			},
+			"v_count": {
+				"type": "string",
+				"defaultValue": "0"
+			},
+			"v_temp": {
+				"type": "string"
 			}
 		},
 		"variables": {
