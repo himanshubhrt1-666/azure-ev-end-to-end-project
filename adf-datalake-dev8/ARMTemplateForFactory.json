@@ -61,10 +61,98 @@
 							},
 							"firstRowOnly": false
 						}
+					},
+					{
+						"name": "act_set_all_tables",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "act_lookup_tables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_all_tables",
+							"value": [
+								"@activity('act_lookup_tables').output.value"
+							]
+						}
+					},
+					{
+						"name": "var_table_count",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "act_lookup_tables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_table_count",
+							"value": {
+								"value": "@activity('act_lookup_tables').output.count",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "act_filter_active",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "act_lookup_tables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('act_lookup_tables').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().active,true)",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_env": {
+						"type": "string",
+						"defaultValue": "dev"
+					}
+				},
+				"variables": {
+					"var_all_tables": {
+						"type": "Array",
+						"defaultValue": []
+					},
+					"var_table_count": {
+						"type": "Integer"
+					},
+					"v_schema": {
+						"type": "String"
+					}
 				},
 				"annotations": []
 			},
