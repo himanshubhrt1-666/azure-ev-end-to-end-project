@@ -258,6 +258,80 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "act_route_env",
+						"type": "Switch",
+						"dependsOn": [
+							{
+								"activity": "act_filter_active",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"on": {
+								"value": "@pipeline().parameters.p_env",
+								"type": "Expression"
+							},
+							"cases": [
+								{
+									"value": "dev",
+									"activities": [
+										{
+											"name": "act_set_dev_schema",
+											"type": "SetVariable",
+											"dependsOn": [],
+											"policy": {
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"variableName": "v_schema",
+												"value": "stg"
+											}
+										}
+									]
+								},
+								{
+									"value": "prod",
+									"activities": [
+										{
+											"name": "act_set_prod_schema",
+											"type": "SetVariable",
+											"dependsOn": [],
+											"policy": {
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"variableName": "v_schema",
+												"value": "dbo"
+											}
+										}
+									]
+								}
+							],
+							"defaultActivities": [
+								{
+									"name": "act_fail_bad_env",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "@concat('Unkown Environment',pipeline().parameters.p_env)",
+											"type": "Expression"
+										},
+										"errorCode": "BAD_ENV"
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
